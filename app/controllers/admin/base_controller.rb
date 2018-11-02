@@ -30,13 +30,13 @@ class Admin::BaseController < ::InheritedResources::Base
       format.js { render layout: false }
       format.csv do
         authorize! :export, resource_class
-        doc = AbAdmin::Utils::CsvDocument.new(collection, export_options)
+        doc = AbAdmin::Utils::CsvDocument.new(try(:collection_for_csv) || collection, export_options)
         send_data(doc.render, filename: doc.filename, type: Mime::CSV, disposition: 'attachment')
       end
       if defined?(Mime::XLSX)
         format.xls do
           authorize! :export, resource_class
-          doc = AbAdmin::Utils::XlsDocument.new(collection, export_options)
+          doc = AbAdmin::Utils::XlsDocument.new(try(:collection_for_xls) || collection, export_options)
           send_data(doc.render, filename: doc.filename, type: Mime::XLSX, disposition: 'attachment')
         end
       end
