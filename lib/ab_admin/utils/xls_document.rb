@@ -81,7 +81,7 @@ module AbAdmin
           end
         else
           items = @source.respond_to?(:to_a) ? @source.to_a : Array.wrap(@source)
-          @klass ||= items.first.class unless items.empty?
+          @klass ||= @source.try(:model_name) || items.first.try(:model_name) || items.first&.class
           @klass ||= Default
 
           items.each do |item|
