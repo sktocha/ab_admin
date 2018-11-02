@@ -60,7 +60,14 @@ module AbAdmin
       end
 
       def worksheet_name
-        @worksheet_name ||= (@options[:worksheet_name] || @klass.model_name.human)
+        normalized_worksheet_name
+      end
+
+      # limitation of old excel
+      def normalized_worksheet_name
+        @worksheet_name ||= @options[:worksheet_name] || @klass.model_name.human
+        @worksheet_name.chomp!(@worksheet_name[-1]) while @worksheet_name&.bytesize.to_i > 31
+        @worksheet_name
       end
 
       def each_with_index
