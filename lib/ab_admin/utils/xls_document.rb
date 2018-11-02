@@ -65,7 +65,7 @@ module AbAdmin
 
       # limitation of old excel
       def normalized_worksheet_name
-        @worksheet_name ||= @options[:worksheet_name] || @klass.model_name.human
+        @worksheet_name ||= @options[:worksheet_name] || @klass.try(:model_name).try(:human) || '1'
         @worksheet_name.chomp!(@worksheet_name[-1]) while @worksheet_name&.bytesize.to_i > 31
         @worksheet_name
       end
@@ -81,7 +81,10 @@ module AbAdmin
           end
         else
           items = @source.respond_to?(:to_a) ? @source.to_a : Array.wrap(@source)
-          @klass ||= @source.try(:model_name) || items.first.try(:model_name) || items.first&.class
+          @klass ||=
+            @source.try(:model_name) ||
+              (items.first.class if items.first&.is_a?(ActiveRecord::Base)) ||
+                items.first.try(:model_name) || items.first&.class
           @klass ||= Default
 
           items.each do |item|
